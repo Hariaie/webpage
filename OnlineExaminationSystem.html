@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Examination System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #86efac, #4ade80);
+            display: flex;
+            align-items: center;
+            justify-content: center;	++
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            width: 800px;
+            max-width: 90%;
+            min-height: 500px;
+        }
+
+        /* Dark theme styles */
+        body.dark {
+            background: linear-gradient(135deg, #1a2e1a, #0d5c1a);
+        }
+
+        body.dark .container {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+
+        body.dark #welcome-section h1 {
+            color: #86efac;
+        }
+
+        body.dark #welcome-section p {
+            color: #e2e8f0;
+        }
+
+        body.dark .quiz-box {
+            background: #334155;
+        }
+
+        body.dark .quiz-box h3 {
+            color: #f8fafc;
+        }
+
+        body.dark .quiz-box p {
+            color: #cbd5e1;
+        }
+
+        body.dark .question-container {
+            background: #334155;
+        }
+
+        body.dark .question-container h3 {
+            color: #f8fafc;
+        }
+
+        body.dark .history-content {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark .history-item {
+            border-bottom-color: #475569;
+        }
+
+        body.dark .menu-dropdown {
+            background-color: #334155;
+        }
+
+        body.dark .menu-dropdown button {
+            color: #f8fafc;
+        }
+
+        body.dark .menu-dropdown button:hover {
+            background-color: #475569;
+        }
+
+        body.dark #results {
+            background: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark #results h3 {
+            color: #86efac;
+        }
+
+        body.dark #results p {
+            color: #f8fafc;
+        }
+
+        body.dark .question-result {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark .correct-answer {
+            color: #86efac;
+        }
+
+        body.dark .incorrect-answer {
+            color: #fca5a5;
+        }
+
+        body.dark .chart-center {
+            color: #166534;
+            background-color: #f8fafc;
+        }
+
+        body.dark .search-bar input {
+            background-color: #334155;
+            color: #f8fafc;
+            border-color: #475569;
+        }
+
+        body.dark .search-bar input::placeholder {
+            color: #cbd5e1;
+        }
+
+        body.dark #quiz-creator {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark #quiz-creator input,
+        body.dark #quiz-creator select,
+        body.dark #quiz-creator textarea {
+            background-color: #475569;
+            color: #f8fafc;
+            border-color: #64748b;
+        }
+
+        body.dark #quiz-creator input::placeholder,
+        body.dark #quiz-creator textarea::placeholder {
+            color: #cbd5e1;
+        }
+
+        body.dark .question-item {
+            background-color: #475569;
+            border-color: #64748b;
+        }
+
+        body.dark .option-item {
+            background-color: #475569;
+            border-color: #64748b;
+        }
+
+        #welcome-section {
+            text-align: center;
+            padding: 50px;
+        }
+
+        #welcome-section h1 {
+            font-size: 32px;
+            color: #166534;
+            margin-bottom: 15px;
+        }
+
+        #welcome-section p {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 30px;
+        }
+
+        #start-button {
+            background-color: #22c55e;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #start-button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #auth-section {
+            display: none;
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            padding: 60px 40px;
+            transition: all 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #register-form {
+            left: 0;
+            z-index: 2;
+        }
+
+        #login-form {
+            left: 0;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .active #register-form {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .active #login-form {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 3;
+        }
+
+        .toggle-panel {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, #4ade80, #22c55e);
+            transition: all 0.6s ease-in-out;
+            border-radius: 150px 0 0 100px;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .active .toggle-panel {
+            transform: translateX(-100%);
+            border-radius: 0 150px 100px 0;
+        }
+
+        .form-container h2 {
+            color: #1e293b;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .form-container input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        .form-container button {
+            background-color: #22c55e;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #reg-message,
+        #login-message {
+            color: #ef4444;
+            font-size: 19px;
+            margin-top: 10px;
+            text-align: center;
+            height: 20px;
+        }
+
+        #quiz-selection {
+            display: none;
+            padding: 30px;
+            position: relative;
+        }
+
+        #quiz-selection h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-buttons button {
+            background-color: white;
+            color: #1e293b;
+            border: 2px solid #22c55e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-buttons button:hover {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .filter-buttons button.active {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .search-bar {
+            display: none;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search-bar input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: #64748b;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .quiz-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .quiz-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quiz-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-height: 150px;
+        }
+
+        .quiz-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #22c55e;
+        }
+
+        .quiz-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .quiz-box h3 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .quiz-box p {
+            color: #64748b;
+            margin: 5px 0;
+        }
+
+        .favorite-star {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .favorite-star.favorited {
+            color: #f59e0b;
+        }
+
+        #exam-section {
+            display: none;
+            padding: 30px;
+        }
+
+        #timer {
+            background: #22c55e;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-container {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-container input[type="text"] {
+            width: 100%;
+            padding: 12px 30px;
+            margin: 15px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .question-container h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .question-container .options {
+            width: 100%;
+            padding: 12px 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .question-container input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .question-container label {
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .question-container button {
+            background-color: #22c55e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: block;
+            width: 100%;
+        }
+
+        .question-container button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #submit-exam {
+            background-color: #22c55e;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #submit-exam:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #submit-exam:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #results {
+            background: #f0fdf4;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        #results h3 {
+            color: #166534;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #results button {
+            background-color: #22c55e;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 30px auto 0;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #results button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .correct-answer {
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .incorrect-answer {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .question-result {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid;
+        }
+
+        .correct {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-left-color: #166534;
+        }
+
+        .incorrect {
+            background-color: rgba(220, 38, 38, 0.1);
+            border-left-color: #dc2626;
+        }
+
+        .menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .theme-button {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+            background-color: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .search-button {
+            position: absolute;
+            top: 20px;
+            right: 120px;
+            background-color: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .menu-button:hover,
+        .theme-button:hover,
+        .search-button:hover {
+            background-color: #16a34a;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            width: 200px;
+            z-index: 10;
+            display: none;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-dropdown button {
+            width: 100%;
+            padding: 10px 15px;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #1e293b;
+        }
+
+        .menu-dropdown button:hover {
+            background-color: #f1f5f9;
+        }
+
+        #history-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .history-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .history-content h3 {
+            color: #22c55e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .close-history {
+            background-color: #22c55e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .close-history:hover {
+            background-color: #16a34a;
+        }
+
+        .chart-container {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #22c55e 0% var(--correct-percent),
+                #ef4444 var(--correct-percent) 100%
+            );
+        }
+
+        .chart-center {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: white;
+            border-radius: 50%;
+            top: 20%;
+            left: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: #166534;
+        }
+
+        /* Quiz Creator Styles */
+        #quiz-creator {
+            display: none;
+            padding: 30px;
+        }
+
+        #quiz-creator h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-meta input,
+        .quiz-meta select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .quiz-meta input:focus,
+        .quiz-meta select:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        .questions-list {
+            margin-top: 20px;
+        }
+
+        .question-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .question-item h4 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .question-item textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .question-item textarea:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .answer-input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        .options-list {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .option-item input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .option-item input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+        }
+
+        .option-item button {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .question-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-option-btn {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .remove-question-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .creator-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .creator-actions button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .creator-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #save-quiz-btn {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        #save-quiz-btn:hover {
+            background-color: #16a34a;
+        }
+
+        #cancel-quiz-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        #cancel-quiz-btn:hover {
+            background-color: #dc2626;
+        }
+
+        #add-question-btn {
+            background-color: #22c55e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #add-question-btn:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Page -->
+        <div id="welcome-section">
+            <h1>Welcome to the Quiz</h1>
+            <p>Let's get started!</p>
+            <button id="start-button">Get Started</button>
+        </div>
+
+        <!-- Authentication Section -->
+        <div id="auth-section">
+            <div class="form-container" id="register-form">
+                <h2>Register</h2>
+                <input type="text" id="reg-userId" placeholder="Enter User ID">
+                <input type="password" id="reg-password" placeholder="Enter Password">
+                <button id="register-btn">Register</button>
+                <p id="reg-message"></p>
+            </div>
+            <div class="form-container" id="login-form">
+                <h2>Login</h2>
+                <input type="text" id="login-userId" placeholder="Enter User ID">
+                <input type="password" id="login-password" placeholder="Enter Password">
+                <button id="login-btn">Login</button>
+                <p id="login-message"></p>
+            </div>
+            <div class="toggle-panel"></div>
+        </div>
+
+        <!-- Quiz Selection Section -->
+        <div id="quiz-selection">
+            <button class="theme-button" id="theme-btn">🌓</button>
+            <button class="search-button" id="search-btn">🔍</button>
+            <button class="menu-button" id="menu-btn">≡</button>
+            <div class="menu-dropdown" id="menu-dropdown">
+                <button id="history-btn">History</button>
+                <button id="favorites-btn">Favorites</button>
+                <button id="create-quiz-btn">Create a Quiz</button>                     
+            </div>
+            <h2 style="color:#22c55e">Select a Quiz</h2>
+            <div class="filter-buttons">
+                <button onclick="filterQuizzes('all')">All</button>
+                <button onclick="filterQuizzes('gk')">General Knowledge</button>
+                <button onclick="filterQuizzes('science')">Science</button>
+                <button onclick="filterQuizzes('cricket')">Cricket</button>
+                <button onclick="filterQuizzes('dsa')">DSA</button>
+                <button onclick="filterQuizzes('java')">Java</button>
+                <button onclick="filterQuizzes('uid')">UID</button>
+                <button onclick="filterQuizzes('mcq')">MCQ</button>
+                <button onclick="filterQuizzes('created')">Created</button>
+            </div>
+            <div class="search-bar" id="search-bar">
+                <input type="text" id="search-input" placeholder="Search quizzes...">
+            </div>
+            <div class="quiz-grid" id="quiz-container">
+                <!-- Quizzes will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Exam Section -->
+        <div id="exam-section">
+            <div id="timer">Time left: 30s</div>
+            <div id="questions-container"></div>
+            <button id="submit-exam" style="display: none;">Submit Exam</button>
+            <div id="results"></div>
+        </div>
+
+        <!-- Quiz Creator Section -->
+        <div id="quiz-creator">
+            <button class="theme-button" id="creator-theme-btn">🌓</button>
+            <h2 style="color:#22c55e">Create a New Quiz</h2>
+            <div class="quiz-meta">
+                <div>
+                    <label for="quiz-title">Quiz Title</label>
+                    <input type="text" id="quiz-title" placeholder="Enter quiz title">
+                </div>
+                <div>
+                    <label for="quiz-topic">Topic</label>
+                    <input type="text" id="quiz-topic" placeholder="Enter topic (e.g., Science, History)">
+                </div>
+            </div>
+            <div class="quiz-meta">
+                <div>
+                    <label for="quiz-type">Question Type</label>
+                    <select id="quiz-type">
+                        <option value="text">Text Answer</option>
+                        <option value="mcq">Multiple Choice</option>
+                    </select>
+                </div>
+            </div>
+            <div class="questions-list" id="questions-list">
+                <!-- Questions will be added here -->
+            </div>
+            <button id="add-question-btn">Add Question</button>
+            <div class="creator-actions">
+                <button id="save-quiz-btn">Save Quiz</button>
+                <button id="cancel-quiz-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-content">
+            <h3>Quiz History</h3>
+            <div id="history-items"></div>
+            <button class="close-history" onclick="closeHistory()">Close</button>
+        </div>
+    </div>
+
+    <script>
+      // Simulated backend data structures
+      const users = new Map();
+      const userFavorites = new Map();
+      const quizzes = [
+        {
+          id: "gk1",
+          title: "GK Quiz 1",
+          topic: "gk",
+          type: "text",
+          questions: [
+            { id: "Q1", text: "What is the capital of France?", answer: "Paris" },
+            {
+              id: "Q2",
+              text: "Which planet is known as the Red Planet?",
+              answer: "Mars"
+            },
+            { id: "Q3", text: "Who painted the Mona Lisa?", answer: "Da Vinci" }
+          ]
+        },
+        {
+          id: "gk2",
+          title: "GK Quiz 2",
+          topic: "gk",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the largest ocean on Earth?",
+              answer: "Pacific"
+            },
+            {
+              id: "Q2",
+              text: "Which country is home to the kangaroo?",
+              answer: "Australia"
+            },
+            {
+              id: "Q3",
+              text: "Who wrote 'Romeo and Juliet'?",
+              answer: "Shakespeare"
+            }
+          ]
+        },
+        {
+          id: "gk3",
+          title: "GK Quiz 3",
+          topic: "gk",
+          type: "text",
+          questions: [
+            { id: "Q1", text: "What is the currency of Japan?", answer: "Yen" },
+            {
+              id: "Q2",
+              text: "Which animal is known as the 'King of the Jungle'?",
+              answer: "Lion"
+            },
+            { id: "Q3", text: "How many continents are there?", answer: "7" }
+          ]
+        },
+        {
+          id: "gk4",
+          title: "GK Quiz 4",
+          topic: "gk",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the longest river in the world?",
+              answer: "Nile",
+              options: ["Amazon", "Nile", "Yangtze", "Mississippi"]
+            },
+            {
+              id: "Q2",
+              text: "Which country has the most deserts?",
+              answer: "Australia",
+              options: ["Sahara", "Australia", "Antarctica", "India"]
+            },
+            {
+              id: "Q3",
+              text: "Who discovered penicillin?",
+              answer: "Alexander Fleming",
+              options: [
+                "Marie Curie",
+                "Alexander Fleming",
+                "Isaac Newton",
+                "Albert Einstein"
+              ]
+            }
+          ]
+        },
+        {
+          id: "gk5",
+          title: "GK Quiz 5",
+          topic: "gk",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the smallest country in the world?",
+              answer: "Vatican City",
+              options: ["Monaco", "Vatican City", "Maldives", "San Marino"]
+            },
+            {
+              id: "Q2",
+              text: "Which element is the most abundant in Earth's crust?",
+              answer: "Oxygen",
+              options: ["Silicon", "Oxygen", "Aluminum", "Iron"]
+            },
+            {
+              id: "Q3",
+              text: "Who was the first woman to win a Nobel Prize?",
+              answer: "Marie Curie",
+              options: [
+                "Rosalind Franklin",
+                "Marie Curie",
+                "Ada Lovelace",
+                "Jane Goodall"
+              ]
+            }
+          ]
+        },
+        {
+          id: "gk6",
+          title: "GK Quiz 6",
+          topic: "gk",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which mountain is the highest in the world?",
+              answer: "Mount Everest",
+              options: ["K2", "Kangchenjunga", "Mount Everest", "Lhotse"]
+            },
+            {
+              id: "Q2",
+              text: "What is the capital of Brazil?",
+              answer: "Brasilia",
+              options: ["Rio de Janeiro", "Sao Paulo", "Brasilia", "Salvador"]
+            },
+            {
+              id: "Q3",
+              text: "Which gas is most abundant in Earth's atmosphere?",
+              answer: "Nitrogen",
+              options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Argon"]
+            }
+          ]
+        },
+        {
+          id: "science1",
+          title: "Science Quiz 1",
+          topic: "science",
+          type: "text",
+          questions: [
+            { id: "Q1", text: "What is H2O?", answer: "Water" },
+            {
+              id: "Q2",
+              text: "What is the chemical symbol for gold?",
+              answer: "Au"
+            },
+            {
+              id: "Q3",
+              text: "What force keeps us on the ground?",
+              answer: "Gravity"
+            }
+          ]
+        },
+        {
+          id: "science2",
+          title: "Science Quiz 2",
+          topic: "science",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the nearest star to Earth?",
+              answer: "Sun"
+            },
+            {
+              id: "Q2",
+              text: "What gas do plants absorb from the atmosphere?",
+              answer: "Carbon dioxide"
+            },
+            {
+              id: "Q3",
+              text: "What is the hardest natural substance on Earth?",
+              answer: "Diamond"
+            }
+          ]
+        },
+        {
+          id: "science3",
+          title: "Science Quiz 3",
+          topic: "science",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the study of fossils called?",
+              answer: "Paleontology"
+            },
+            { id: "Q2", text: "What is the pH value of pure water?", answer: "7" },
+            {
+              id: "Q3",
+              text: "Which planet has the most moons?",
+              answer: "Jupiter"
+            }
+          ]
+        },
+        {
+          id: "science4",
+          title: "Science Quiz 4",
+          topic: "science",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the primary source of energy for Earth's climate system?",
+              answer: "Sun",
+              options: ["Moon", "Sun", "Earth's core", "Wind"]
+            },
+            {
+              id: "Q2",
+              text: "Which gas is essential for human respiration?",
+              answer: "Oxygen",
+              options: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Helium"]
+            },
+            {
+              id: "Q3",
+              text: "What is the unit of electric current?",
+              answer: "Ampere",
+              options: ["Volt", "Watt", "Ampere", "Ohm"]
+            }
+          ]
+        },
+        {
+          id: "science5",
+          title: "Science Quiz 5",
+          topic: "science",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which organ pumps blood in the human body?",
+              answer: "Heart",
+              options: ["Lungs", "Liver", "Heart", "Kidneys"]
+            },
+            {
+              id: "Q2",
+              text: "What is the main component of the sun?",
+              answer: "Hydrogen",
+              options: ["Helium", "Hydrogen", "Oxygen", "Carbon"]
+            },
+            {
+              id: "Q3",
+              text: "Which scientist proposed the theory of relativity?",
+              answer: "Albert Einstein",
+              options: [
+                "Isaac Newton",
+                "Albert Einstein",
+                "Galileo Galilei",
+                "Niels Bohr"
+              ]
+            }
+          ]
+        },
+        {
+          id: "science6",
+          title: "Science Quiz 6",
+          topic: "science",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the boiling point of water in Celsius?",
+              answer: "100",
+              options: ["0", "50", "100", "150"]
+            },
+            {
+              id: "Q2",
+              text: "Which planet is known for its rings?",
+              answer: "Saturn",
+              options: ["Jupiter", "Saturn", "Uranus", "Neptune"]
+            },
+            {
+              id: "Q3",
+              text: "What is the chemical symbol for iron?",
+              answer: "Fe",
+              options: ["Au", "Fe", "Ag", "Cu"]
+            }
+          ]
+        },
+        {
+          id: "cricket1",
+          title: "Cricket Quiz 1",
+          topic: "cricket",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which country won the 2019 Cricket World Cup?",
+              answer: "England"
+            },
+            {
+              id: "Q2",
+              text: "Who has scored the most runs in international cricket?",
+              answer: "Sachin Tendulkar"
+            },
+            {
+              id: "Q3",
+              text: "What is the highest individual score in ODI cricket?",
+              answer: "264"
+            }
+          ]
+        },
+        {
+          id: "cricket2",
+          title: "Cricket Quiz 2",
+          topic: "cricket",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which bowler has the most wickets in Test cricket?",
+              answer: "Muttiah Muralitharan"
+            },
+            {
+              id: "Q2",
+              text: "What is the nickname of the Australian cricket team?",
+              answer: "The Baggy Greens"
+            },
+            {
+              id: "Q3",
+              text: "Which country hosted the first T20 World Cup?",
+              answer: "South Africa"
+            }
+          ]
+        },
+        {
+          id: "cricket3",
+          title: "Cricket Quiz 3",
+          topic: "cricket",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "Who is known as the 'Rawalpindi Express'?",
+              answer: "Shoaib Akhtar"
+            },
+            {
+              id: "Q2",
+              text: "Which team has won the most IPL titles?",
+              answer: "Mumbai Indians"
+            },
+            {
+              id: "Q3",
+              text: "What is the length of a cricket pitch in yards?",
+              answer: "22"
+            }
+          ]
+        },
+        {
+          id: "cricket4",
+          title: "Cricket Quiz 4",
+          topic: "cricket",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Who is known as 'King Kohli'?",
+              answer: "Virat Kohli",
+              options: [
+                "Rohit Sharma",
+                "Virat Kohli",
+                "MS Dhoni",
+                "Sachin Tendulkar"
+              ]
+            },
+            {
+              id: "Q2",
+              text: "Which country won the first Cricket World Cup in 1975?",
+              answer: "West Indies",
+              options: ["Australia", "England", "West Indies", "India"]
+            },
+            {
+              id: "Q3",
+              text: "What is the maximum number of overs in a T20 match?",
+              answer: "20",
+              options: ["10", "20", "50", "100"]
+            }
+          ]
+        },
+        {
+          id: "cricket5",
+          title: "Cricket Quiz 5",
+          topic: "cricket",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which player is known as the 'Sultan of Swing'?",
+              answer: "Wasim Akram",
+              options: [
+                "Imran Khan",
+                "Wasim Akram",
+                "Waqar Younis",
+                "Shoaib Akhtar"
+              ]
+            },
+            {
+              id: "Q2",
+              text: "Which city hosts the IPL team Chennai Super Kings?",
+              answer: "Chennai",
+              options: ["Mumbai", "Chennai", "Delhi", "Kolkata"]
+            },
+            {
+              id: "Q3",
+              text: "What is the term for dismissing a batsman without scoring?",
+              answer: "Duck",
+              options: ["Goose", "Duck", "Swan", "Eagle"]
+            }
+          ]
+        },
+        {
+          id: "cricket6",
+          title: "Cricket Quiz 6",
+          topic: "cricket",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Who holds the record for the fastest century in ODI cricket?",
+              answer: "AB de Villiers",
+              options: [
+                "Chris Gayle",
+                "AB de Villiers",
+                "Virat Kohli",
+                "David Warner"
+              ]
+            },
+            {
+              id: "Q2",
+              text: "Which country won the 2023 Cricket World Cup?",
+              answer: "Australia",
+              options: ["India", "Australia", "England", "South Africa"]
+            },
+            {
+              id: "Q3",
+              text: "What is the term for a ball that bounces twice before reaching the batsman?",
+              answer: "Double Bounce",
+              options: ["No Ball", "Wide", "Double Bounce", "Dead Ball"]
+            }
+          ]
+        },
+        {
+          id: "dsa1",
+          title: "DSA Quiz 1",
+          topic: "dsa",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the time complexity of binary search?",
+              answer: "O(log n)"
+            },
+            { id: "Q2", text: "Which data structure uses LIFO?", answer: "Stack" },
+            {
+              id: "Q3",
+              text: "What is the worst-case time complexity of quicksort?",
+              answer: "O(n^2)"
+            }
+          ]
+        },
+        {
+          id: "dsa2",
+          title: "DSA Quiz 2",
+          topic: "dsa",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which sorting algorithm has the best average-case time complexity?",
+              answer: "Merge Sort"
+            },
+            {
+              id: "Q2",
+              text: "What is the space complexity of a binary tree?",
+              answer: "O(n)"
+            },
+            {
+              id: "Q3",
+              text: "What is the main operation of a queue?",
+              answer: "Enqueue and Dequeue"
+            }
+          ]
+        },
+        {
+          id: "dsa3",
+          title: "DSA Quiz 3",
+          topic: "dsa",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the primary purpose of a hash table?",
+              answer: "Fast lookup"
+            },
+            { id: "Q2", text: "Which traversal visits the root node first?", answer: "Preorder" },
+            {
+              id: "Q3",
+              text: "What is the time complexity of accessing an element in a linked list?",
+              answer: "O(n)"
+            }
+          ]
+        },
+        {
+          id: "dsa4",
+          title: "DSA Quiz 4",
+          topic: "dsa",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which data structure is used in breadth-first search?",
+              answer: "Queue",
+              options: ["Stack", "Queue", "Heap", "Tree"]
+            },
+            {
+              id: "Q2",
+              text: "What is the time complexity of inserting into a binary heap?",
+              answer: "O(log n)",
+              options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+            },
+            {
+              id: "Q3",
+              text: "Which algorithm finds the shortest path in a weighted graph?",
+              answer: "Dijkstra's",
+              options: ["Kruskal's", "Dijkstra's", "Prim's", "Floyd-Warshall"]
+            }
+          ]
+        },
+        {
+          id: "dsa5",
+          title: "DSA Quiz 5",
+          topic: "dsa",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which data structure is best for implementing a priority queue?",
+              answer: "Heap",
+              options: ["Array", "Linked List", "Heap", "Stack"]
+            },
+            {
+              id: "Q2",
+              text: "What is the time complexity of merge sort?",
+              answer: "O(n log n)",
+              options: ["O(n)", "O(n^2)", "O(n log n)", "O(log n)"]
+            },
+            {
+              id: "Q3",
+              text: "Which algorithm is used to detect a cycle in a graph?",
+              answer: "DFS",
+              options: ["BFS", "DFS", "Dijkstra's", "Prim's"]
+            }
+          ]
+        },
+        {
+          id: "dsa6",
+          title: "DSA Quiz 6",
+          topic: "dsa",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the space complexity of a depth-first search?",
+              answer: "O(V)",
+              options: ["O(1)", "O(V)", "O(E)", "O(V+E)"]
+            },
+            {
+              id: "Q2",
+              text: "Which data structure is used in a trie?",
+              answer: "Tree",
+              options: ["Array", "Tree", "Graph", "Queue"]
+            },
+            {
+              id: "Q3",
+              text: "What is the time complexity of searching in a balanced BST?",
+              answer: "O(log n)",
+              options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"]
+            }
+          ]
+        },
+        {
+          id: "java1",
+          title: "Java Quiz 1",
+          topic: "java",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the default value of an int in Java?",
+              answer: "0"
+            },
+            {
+              id: "Q2",
+              text: "Which keyword is used to inherit a class?",
+              answer: "extends"
+            },
+            {
+              id: "Q3",
+              text: "What is the purpose of the 'final' keyword?",
+              answer: "Prevent modification"
+            }
+          ]
+        },
+        {
+          id: "java2",
+          title: "Java Quiz 2",
+          topic: "java",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the superclass of all classes in Java?",
+              answer: "Object"
+            },
+            {
+              id: "Q2",
+              text: "Which exception is thrown when dividing by zero?",
+              answer: "ArithmeticException"
+            },
+            { id: "Q3", text: "What does JVM stand for?", answer: "Java Virtual Machine" }
+          ]
+        },
+        {
+          id: "java3",
+          title: "Java Quiz 3",
+          topic: "java",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which access modifier allows access only within the same package?",
+              answer: "default"
+            },
+            {
+              id: "Q2",
+              text: "What is the purpose of the 'static' keyword?",
+              answer: "Class-level access"
+            },
+            {
+              id: "Q3",
+              text: "Which interface is used to create a resizable array?",
+              answer: "List"
+            }
+          ]
+        },
+        {
+          id: "java4",
+          title: "Java Quiz 4",
+          topic: "java",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "Which keyword is used to implement an interface?",
+              answer: "implements",
+              options: ["extends", "implements", "super", "this"]
+            },
+            {
+              id: "Q2",
+              text: "What is the default value of a boolean in Java?",
+              answer: "false",
+              options: ["true", "false", "null", "0"]
+            },
+            {
+              id: "Q3",
+              text: "Which class is used for thread-safe ArrayList?",
+              answer: "CopyOnWriteArrayList",
+              options: ["ArrayList", "LinkedList", "CopyOnWriteArrayList", "Vector"]
+            }
+          ]
+        },
+        {
+          id: "java5",
+          title: "Java Quiz 5",
+          topic: "java",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the purpose of the 'transient' keyword?",
+              answer: "Prevent serialization",
+              options: [
+                "Prevent serialization",
+                "Prevent inheritance",
+                "Prevent instantiation",
+                "Prevent overriding"
+              ]
+            },
+            {
+              id: "Q2",
+              text: "Which method is called when an object is garbage collected?",
+              answer: "finalize",
+              options: ["destroy", "finalize", "delete", "clean"]
+            },
+            {
+              id: "Q3",
+              text: "Which collection class is synchronized?",
+              answer: "Hashtable",
+              options: ["HashMap", "TreeMap", "Hashtable", "LinkedHashMap"]
+            }
+          ]
+        },
+        {
+          id: "java6",
+          title: "Java Quiz 6",
+          topic: "java",
+          type: "mcq",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the return type of the main method in Java?",
+              answer: "void",
+              options: ["int", "String", "void", "boolean"]
+            },
+            {
+              id: "Q2",
+              text: "Which keyword is used to refer to the current object?",
+              answer: "this",
+              options: ["super", "this", "static", "final"]
+            },
+            {
+              id: "Q3",
+              text: "Which class is used to read input from the console?",
+              answer: "Scanner",
+              options: ["Reader", "Scanner", "InputStream", "BufferedReader"]
+            }
+          ]
+        },
+        {
+          id: "uid1",
+          title: "HTML Quiz",
+          topic: "html",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What does HTML stand for?",
+              answer: "HyperText Markup Language"
+            },
+            { id: "Q2", text: "Which tag is used to create a hyperlink?", answer: "a" },
+            { id: "Q3", text: "What is the purpose of the 'div' tag?", answer: "Container" }
+          ]
+        },
+        {
+          id: "uid2",
+          title: "CSS Quiz",
+          topic: "css",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What does CSS stand for?",
+              answer: "Cascading Style Sheets"
+            },
+            {
+              id: "Q2",
+              text: "Which property is used to change text color?",
+              answer: "color"
+            },
+            {
+              id: "Q3",
+              text: "What is the default value of 'position' property?",
+              answer: "static"
+            }
+          ]
+        },
+        {
+          id: "uid3",
+          title: "JavaScript Quiz",
+          topic: "javascript",
+          type: "text",
+          questions: [
+            {
+              id: "Q1",
+              text: "What is the purpose of 'addEventListener'?",
+              answer: "Handle events"
+            },
+            {
+              id: "Q2",
+              text: "Which keyword declares a block-scoped variable?",
+              answer: "let"
+            },
+            { id: "Q3", text: "What is the output of 'typeof null'?", answer: "object" }
+          ]
+        }
+      ];
+
+      const userScores = new Map();
+      const userCreatedQuizzes = new Map();
+      let currentUserId = null;
+      let selectedQuiz = null;
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timer;
+      let timeLeft = 30;
+      let userAnswers = [];
+      let darkMode = false;
+
+      // DOM Elements
+      const welcomeSection = document.getElementById("welcome-section");
+      const authSection = document.getElementById("auth-section");
+      const quizSection = document.getElementById("quiz-selection");
+      const examSection = document.getElementById("exam-section");
+      const quizCreatorSection = document.getElementById("quiz-creator");
+      const startButton = document.getElementById("start-button");
+      const registerBtn = document.getElementById("register-btn");
+      const loginBtn = document.getElementById("login-btn");
+      const submitExamBtn = document.getElementById("submit-exam");
+      const menuBtn = document.getElementById("menu-btn");
+      const themeBtn = document.getElementById("theme-btn");
+      const searchBtn = document.getElementById("search-btn");
+      const searchBar = document.getElementById("search-bar");
+      const searchInput = document.getElementById("search-input");
+      const menuDropdown = document.getElementById("menu-dropdown");
+      const historyBtn = document.getElementById("history-btn");
+      const favoritesBtn = document.getElementById("favorites-btn");
+      const createQuizBtn = document.getElementById("create-quiz-btn");
+      const historyModal = document.getElementById("history-modal");
+      const historyItems = document.getElementById("history-items");
+      const body = document.body;
+      const quizTitleInput = document.getElementById("quiz-title");
+      const quizTopicInput = document.getElementById("quiz-topic");
+      const quizTypeSelect = document.getElementById("quiz-type");
+      const questionsList = document.getElementById("questions-list");
+      const addQuestionBtn = document.getElementById("add-question-btn");
+      const saveQuizBtn = document.getElementById("save-quiz-btn");
+      const cancelQuizBtn = document.getElementById("cancel-quiz-btn");
+      const creatorThemeBtn = document.getElementById("creator-theme-btn");
+
+      // Event Listeners
+      startButton.addEventListener("click", function () {
+        welcomeSection.style.display = "none";
+        authSection.style.display = "block";
+      });
+
+      registerBtn.addEventListener("click", register);
+      loginBtn.addEventListener("click", login);
+      submitExamBtn.addEventListener("click", submitExam);
+      menuBtn.addEventListener("click", toggleMenu);
+      themeBtn.addEventListener("click", toggleTheme);
+      creatorThemeBtn.addEventListener("click", toggleTheme);
+      searchBtn.addEventListener("click", toggleSearchBar);
+      searchInput.addEventListener("input", searchQuizzes);
+      historyBtn.addEventListener("click", showHistory);
+      favoritesBtn.addEventListener("click", showFavorites);
+      createQuizBtn.addEventListener("click", showQuizCreator);
+      addQuestionBtn.addEventListener("click", addQuestion);
+      saveQuizBtn.addEventListener("click", saveQuiz);
+      cancelQuizBtn.addEventListener("click", cancelQuiz);
+      quizTypeSelect.addEventListener("change", updateQuestionTypes);
+
+      // Enter key functionality
+      document
+        .getElementById("reg-userId")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") register();
+        });
+      document
+        .getElementById("reg-password")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") register();
+        });
+      document
+        .getElementById("login-userId")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") login();
+        });
+      document
+        .getElementById("login-password")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") login();
+        });
+
+      // Close dropdown and search bar when clicking outside
+      document.addEventListener("click", (event) => {
+        if (
+          !menuBtn.contains(event.target) &&
+          !themeBtn.contains(event.target) &&
+          !searchBtn.contains(event.target) &&
+          !searchBar.contains(event.target)
+        ) {
+          menuDropdown.classList.remove("show");
+          searchBar.style.display = "none";
+        }
+      });
+
+      // Theme toggle function
+      function toggleTheme() {
+        darkMode = !darkMode;
+        if (darkMode) {
+          body.classList.add("dark");
+          themeBtn.textContent = "☀️";
+          creatorThemeBtn.textContent = "☀️";
+        } else {
+          body.classList.remove("dark");
+          themeBtn.textContent = "🌓";
+          creatorThemeBtn.textContent = "🌓";
+        }
+      }
+
+      // Search bar toggle function
+      function toggleSearchBar() {
+        searchBar.style.display =
+          searchBar.style.display === "flex" ? "none" : "flex";
+        if (searchBar.style.display === "flex") {
+          searchInput.focus();
+          menuDropdown.classList.remove("show");
+        }
+      }
+
+      // Search quizzes function
+      function searchQuizzes() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const container = document.getElementById("quiz-container");
+        container.innerHTML = "";
+
+        // Reset active filter button when searching
+        document.querySelectorAll(".filter-buttons button").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        const filteredQuizzes = quizzes.filter(
+          (quiz) =>
+            quiz.title.toLowerCase().includes(searchTerm) ||
+            quiz.topic.toLowerCase().includes(searchTerm)
+        );
+
+        if (filteredQuizzes.length === 0) {
+          container.innerHTML = "<p>No quizzes found.</p>";
+          return;
+        }
+
+        filteredQuizzes.forEach((quiz) => {
+          const quizBox = document.createElement("div");
+          quizBox.className = `quiz-box ${quiz.topic}`;
+          const isFavorited =
+            currentUserId &&
+            userFavorites.has(currentUserId) &&
+            userFavorites.get(currentUserId).has(quiz.id);
+          quizBox.innerHTML = `
+            <h3>${quiz.title}</h3>
+            <p>Topic: ${quiz.topic.toUpperCase()}</p>
+            <p>Questions: ${quiz.questions.length}</p>
+            <p>Type: ${quiz.type.toUpperCase()}</p>
+            <span class="favorite-star ${
+              isFavorited ? "favorited" : ""
+            }" onclick="event.stopPropagation(); toggleFavorite('${quiz.id}')">★</span>
+          `;
+          quizBox.addEventListener("click", () => startQuiz(quiz));
+          container.appendChild(quizBox);
+        });
+      }
+
+      // UI Functions
+      function register() {
+        const userId = document.getElementById("reg-userId").value;
+        const password = document.getElementById("reg-password").value;
+        const messageEl = document.getElementById("reg-message");
+
+        if (!userId || !password) {
+          messageEl.style.color = "#ef4444";
+          messageEl.textContent = "Access denied. Invalid details..!";
+          return;
+        }
+
+        users.set(userId, password);
+        authSection.classList.add("active");
+        messageEl.textContent = "";
+      }
+
+      function login() {
+        const userId = document.getElementById("login-userId").value;
+        const password = document.getElementById("login-password").value;
+        const messageEl = document.getElementById("login-message");
+
+        if (!userId || !password) {
+          messageEl.style.color = "#ef4444";
+          messageEl.textContent = "Access denied. Invalid details..!";
+          return;
+        }
+
+        if (users.has(userId)) {
+          if (users.get(userId) === password) {
+            currentUserId = userId;
+            authSection.style.display = "none";
+            quizSection.style.display = "block";
+            filterQuizzes("all");
+          } else {
+            messageEl.style.color = "#ef4444";
+            messageEl.textContent = "Access denied. Invalid details..!";
+          }
+        } else {
+          messageEl.style.color = "#ef4444";
+          messageEl.textContent = "Access denied. Invalid details..!";
+        }
+      }
+
+      function toggleMenu() {
+        menuDropdown.classList.toggle("show");
+        searchBar.style.display = "none";
+      }
+
+      function showHistory() {
+        menuDropdown.classList.remove("show");
+        historyModal.style.display = "flex";
+
+        historyItems.innerHTML = "";
+
+        if (!currentUserId || !userScores.has(currentUserId)) {
+          historyItems.innerHTML = "<p>No quiz history available.</p>";
+          return;
+        }
+
+        const history = userScores.get(currentUserId);
+
+        if (history.length === 0) {
+          historyItems.innerHTML = "<p>No quiz history available.</p>";
+          return;
+        }
+
+        history.forEach((attempt, index) => {
+          const historyItem = document.createElement("div");
+          historyItem.className = "history-item";
+          historyItem.innerHTML = `
+            <h4>${attempt.quizTitle}</h4>
+            <p>Date: ${new Date(attempt.timestamp).toLocaleString()}</p>
+            <p>Score: ${attempt.score} out of ${attempt.totalQuestions}</p>
+            <p>Percentage: ${Math.round(
+              (attempt.score / attempt.totalQuestions) * 100
+            )}%</p>
+          `;
+          historyItems.appendChild(historyItem);
+        });
+      }
+
+      function showFavorites() {
+        menuDropdown.classList.remove("show");
+        searchBar.style.display = "none";
+        filterQuizzes("favorites");
+      }
+
+      function showCreatedQuizzes() {
+        menuDropdown.classList.remove("show");
+        searchBar.style.display = "none";
+        filterQuizzes("created");
+      }
+
+      function showQuizCreator() {
+        menuDropdown.classList.remove("show");
+        quizSection.style.display = "none";
+        quizCreatorSection.style.display = "block";
+        resetQuizCreator();
+      }
+
+      function closeHistory() {
+        historyModal.style.display = "none";
+      }
+
+      function toggleFavorite(quizId) {
+        if (!currentUserId) return;
+
+        if (!userFavorites.has(currentUserId)) {
+          userFavorites.set(currentUserId, new Set());
+        }
+
+        const favorites = userFavorites.get(currentUserId);
+        if (favorites.has(quizId)) {
+          favorites.delete(quizId);
+        } else {
+          favorites.add(quizId);
+        }
+
+        const currentFilter = document
+          .querySelector(".filter-buttons button.active")
+          ?.getAttribute("onclick")
+          ?.match(/'([^']+)'/)?.[1] || "all";
+        
+        if (currentFilter !== "search") {
+          filterQuizzes(currentFilter);
+        } else {
+          searchQuizzes();
+        }
+      }
+
+      function filterQuizzes(topic) {
+        const container = document.getElementById("quiz-container");
+        container.innerHTML = "";
+
+        // Update active filter button
+        document.querySelectorAll(".filter-buttons button").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.getAttribute("onclick") === `filterQuizzes('${topic}')`) {
+            btn.classList.add("active");
+          }
+        });
+
+        searchBar.style.display = "none";
+        searchInput.value = "";
+
+        let filteredQuizzes;
+        if (topic === "all") {
+          filteredQuizzes = quizzes;
+        } else if (topic === "uid") {
+          filteredQuizzes = quizzes.filter((q) =>
+            ["html", "css", "javascript"].includes(q.topic)
+          );
+        } else if (topic === "mcq") {
+          filteredQuizzes = quizzes.filter((q) => q.type === "mcq");
+        } else if (topic === "favorites") {
+          if (!currentUserId || !userFavorites.has(currentUserId)) {
+            container.innerHTML = "<p>No favorite quizzes selected.</p>";
+            return;
+          }
+          const favoriteIds = userFavorites.get(currentUserId);
+          filteredQuizzes = quizzes.filter((q) => favoriteIds.has(q.id));
+        } else if (topic === "created") {
+          if (!currentUserId || !userCreatedQuizzes.has(currentUserId)) {
+            container.innerHTML = "<p>No quizzes created yet.</p>";
+            return;
+          }
+          const createdIds = userCreatedQuizzes.get(currentUserId);
+          filteredQuizzes = quizzes.filter((q) => createdIds.has(q.id));
+        } else {
+          filteredQuizzes = quizzes.filter((q) => q.topic === topic);
+        }
+
+        filteredQuizzes.forEach((quiz) => {
+          const quizBox = document.createElement("div");
+          quizBox.className = `quiz-box ${quiz.topic}`;
+          const isFavorited =
+            currentUserId &&
+            userFavorites.has(currentUserId) &&
+            userFavorites.get(currentUserId).has(quiz.id);
+          quizBox.innerHTML = `
+            <h3>${quiz.title}</h3>
+            <p>Topic: ${quiz.topic.toUpperCase()}</p>
+            <p>Questions: ${quiz.questions.length}</p>
+            <p>Type: ${quiz.type.toUpperCase()}</p>
+            <span class="favorite-star ${
+              isFavorited ? "favorited" : ""
+            }" onclick="event.stopPropagation(); toggleFavorite('${quiz.id}')">★</span>
+          `;
+          quizBox.addEventListener("click", () => startQuiz(quiz));
+          container.appendChild(quizBox);
+        });
+      }
+
+      function startQuiz(quiz) {
+        selectedQuiz = quiz;
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = [];
+
+        quizSection.style.display = "none";
+        examSection.style.display = "block";
+        searchBar.style.display = "none";
+        searchInput.value = "";
+
+        displayQuestion();
+      }
+
+      function displayQuestion() {
+        if (currentQuestionIndex >= selectedQuiz.questions.length) {
+          submitExamBtn.style.display = "block";
+          clearInterval(timer);
+          document.getElementById("timer").style.display = "none";
+          return;
+        }
+
+        const question = selectedQuiz.questions[currentQuestionIndex];
+        const container = document.getElementById("questions-container");
+        container.innerHTML = "";
+
+        const questionEl = document.createElement("div");
+        questionEl.className = "question-container";
+        let questionHTML = `
+          <h3 style="color:#22c55e">Question ${currentQuestionIndex + 1}</h3>
+          <p>${question.text}</p>
+        `;
+
+        if (selectedQuiz.type === "mcq") {
+          questionHTML += '<div class="options">';
+          question.options.forEach((option, index) => {
+            questionHTML += `
+              <label>
+                <input type="radio" name="answer" value="${option}">
+                ${option}
+              </label>
+            `;
+          });
+          questionHTML += "</div>";
+        } else {
+          questionHTML += '<input type="text" id="current-answer">';
+        }
+
+        questionHTML += '<button onclick="submitAnswer()">Submit Answer</button>';
+        questionEl.innerHTML = questionHTML;
+        container.appendChild(questionEl);
+
+        if (selectedQuiz.type === "text") {
+          document
+            .getElementById("current-answer")
+            .addEventListener("keypress", function (e) {
+              if (e.key === "Enter") submitAnswer();
+            });
+        }
+
+        timeLeft = 30;
+        updateTimerDisplay();
+        clearInterval(timer);
+        timer = setInterval(() => {
+          timeLeft--;
+          updateTimerDisplay();
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            nextQuestion();
+          }
+        }, 1000);
+      }
+
+      function updateTimerDisplay() {
+        document.getElementById(
+          "timer"
+        ).textContent = `Time left: ${timeLeft}s`;
+      }
+
+      function submitAnswer() {
+        let userAnswer;
+        if (selectedQuiz.type === "mcq") {
+          const selectedOption = document.querySelector(
+            'input[name="answer"]:checked'
+          );
+          userAnswer = selectedOption ? selectedOption.value : "";
+        } else {
+          userAnswer = document.getElementById("current-answer").value;
+        }
+
+        const correctAnswer = selectedQuiz.questions[currentQuestionIndex].answer;
+
+        userAnswers.push({
+          question: selectedQuiz.questions[currentQuestionIndex].text,
+          userAnswer: userAnswer,
+          correctAnswer: correctAnswer,
+          isCorrect: userAnswer.toLowerCase() === correctAnswer.toLowerCase()
+        });
+
+        if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+          score++;
+        }
+
+        nextQuestion();
+      }
+
+      function nextQuestion() {
+        clearInterval(timer);
+        currentQuestionIndex++;
+        displayQuestion();
+      }
+
+      function submitExam() {
+        document.getElementById("questions-container").style.display = "none";
+        submitExamBtn.style.display = "none";
+
+        const resultsEl = document.getElementById("results");
+        resultsEl.style.display = "block";
+
+        const percentage = Math.round(
+          (score / selectedQuiz.questions.length) * 100
+        );
+
+        let resultsHTML = `
+          <h3>Quiz Results</h3>
+          <p>Quiz: ${selectedQuiz.title}</p>
+          <p>Score: ${score} out of ${selectedQuiz.questions.length}</p>
+          <p>Percentage: ${percentage}%</p>
+
+          <div class="chart-container">
+            <div class="pie-chart" style="--correct-percent: ${percentage}%"></div>
+            <div class="chart-center">${percentage}%</div>
+          </div>
+
+          <hr>
+          <h4>Question Details:</h4>
+        `;
+
+        userAnswers.forEach((answer, index) => {
+          const isCorrect = answer.isCorrect;
+          resultsHTML += `
+            <div class="question-result ${isCorrect ? "correct" : "incorrect"}">
+              <p><strong>Question ${index + 1}:</strong> ${answer.question}</p>
+              <p>Your answer: <span class="${
+                isCorrect ? "correct-answer" : "incorrect-answer"
+              }">${answer.userAnswer || "No answer"}</span></p>
+          `;
+
+          if (!isCorrect) {
+            resultsHTML += `<p>Correct answer: <span class="correct-answer">${answer.correctAnswer}</span></p>`;
+          }
+
+          resultsHTML += `</div>`;
+        });
+
+        resultsHTML += `<button onclick="backToQuizzes()">Back to Quizzes</button>`;
+        resultsEl.innerHTML = resultsHTML;
+
+        saveQuizAttempt();
+      }
+
+      function saveQuizAttempt() {
+        if (!currentUserId) return;
+
+        const attempt = {
+          quizId: selectedQuiz.id,
+          quizTitle: selectedQuiz.title,
+          score: score,
+          totalQuestions: selectedQuiz.questions.length,
+          timestamp: new Date().getTime()
+        };
+
+        if (!userScores.has(currentUserId)) {
+          userScores.set(currentUserId, []);
+        }
+
+        userScores.get(currentUserId).unshift(attempt);
+      }
+
+      function backToQuizzes() {
+        examSection.style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("questions-container").style.display = "block";
+        quizSection.style.display = "block";
+        document.getElementById("timer").style.display = "block";
+        searchBar.style.display = "none";
+        searchInput.value = "";
+        filterQuizzes("all");
+      }
+
+      // Quiz Creator Functions
+      function resetQuizCreator() {
+        quizTitleInput.value = "";
+        quizTopicInput.value = "";
+        quizTypeSelect.value = "text";
+        questionsList.innerHTML = "";
+      }
+
+      function updateQuestionTypes() {
+        const questionType = quizTypeSelect.value;
+        const questionItems = questionsList.querySelectorAll('.question-item');
+        
+        questionItems.forEach(item => {
+          const optionsList = item.querySelector('.options-list');
+          const answerInput = item.querySelector('.answer-input');
+          const addOptionBtn = item.querySelector('.add-option-btn');
+          
+          if (questionType === 'mcq') {
+            if (optionsList) optionsList.style.display = 'block';
+            if (answerInput) answerInput.style.display = 'none';
+            if (addOptionBtn) addOptionBtn.style.display = 'block';
+          } else {
+            if (optionsList) optionsList.style.display = 'none';
+            if (answerInput) answerInput.style.display = 'block';
+            if (addOptionBtn) addOptionBtn.style.display = 'none';
+          }
+        });
+      }
+
+      function addQuestion() {
+        const questionId = Date.now().toString();
+        const questionType = quizTypeSelect.value;
+        
+        const questionItem = document.createElement("div");
+        questionItem.className = "question-item";
+        questionItem.dataset.id = questionId;
+        
+        questionItem.innerHTML = `
+          <h4 style="color:#22c55e">Question ${questionsList.children.length + 1}</h4>
+          <textarea placeholder="Enter question text"></textarea>
+          <input type="text" class="answer-input" placeholder="Enter correct answer" style="display: ${questionType === 'text' ? 'block' : 'none'}">
+          <div class="options-list" style="display: ${questionType === 'mcq' ? 'block' : 'none'}">
+            <!-- Options will be added here -->
+          </div>
+          <div class="question-actions">
+            ${questionType === 'mcq' ? '<button class="add-option-btn">Add Option</button>' : ''}
+            <button class="remove-question-btn">Remove Question</button>
+          </div>
+        `;
+        
+        if (questionType === 'mcq') {
+          // Add initial option
+          addOption(questionItem.querySelector('.options-list'));
+        }
+        
+        questionsList.appendChild(questionItem);
+        
+        // Add event listeners
+        questionItem.querySelector('.remove-question-btn').addEventListener('click', () => {
+          questionItem.remove();
+          updateQuestionNumbers();
+        });
+        
+        if (questionType === 'mcq') {
+          questionItem.querySelector('.add-option-btn').addEventListener('click', () => {
+            addOption(questionItem.querySelector('.options-list'));
+          });
+        }
+      }
+
+      function addOption(optionsList) {
+        const optionId = Date.now().toString();
+        const optionItem = document.createElement("div");
+        optionItem.className = "option-item";
+        optionItem.dataset.id = optionId;
+        
+        optionItem.innerHTML = `
+          <input type="radio" name="correct-answer-${optionsList.parentElement.dataset.id}" value="">
+          <input type="text" placeholder="Enter option text">
+          <button>Remove</button>
+        `;
+        
+        optionItem.querySelector('button').addEventListener('click', () => {
+          optionItem.remove();
+        });
+        
+        optionItem.querySelector('input[type="text"]').addEventListener('input', (e) => {
+          optionItem.querySelector('input[type="radio"]').value = e.target.value;
+        });
+        
+        optionsList.appendChild(optionItem);
+      }
+
+      function updateQuestionNumbers() {
+        const questions = questionsList.querySelectorAll('.question-item');
+        questions.forEach((question, index) => {
+          question.querySelector('h4').textContent = `Question ${index + 1}`;
+        });
+      }
+
+      function saveQuiz() {
+        const title = quizTitleInput.value.trim();
+        const topic = quizTopicInput.value.trim();
+        const type = quizTypeSelect.value;
+        
+        if (!title) {
+          alert("Please enter a quiz title");
+          return;
+        }
+        
+        if (!topic) {
+          alert("Please enter a quiz topic");
+          return;
+        }
+        
+        const questions = [];
+        const questionItems = questionsList.querySelectorAll('.question-item');
+        
+        if (questionItems.length === 0) {
+          alert("Please add at least one question");
+          return;
+        }
+        
+        for (const questionItem of questionItems) {
+          const questionText = questionItem.querySelector('textarea').value.trim();
+          
+          if (!questionText) {
+            alert("Please enter text for all questions");
+            return;
+          }
+          
+          if (type === 'mcq') {
+            const options = [];
+            let correctAnswer = "";
+            const optionItems = questionItem.querySelectorAll('.option-item');
+            
+            if (optionItems.length < 2) {
+              alert("Each MCQ question must have at least 2 options");
+              return;
+            }
+            
+            for (const optionItem of optionItems) {
+              const optionText = optionItem.querySelector('input[type="text"]').value.trim();
+              
+              if (!optionText) {
+                alert("Please enter text for all options");
+                return;
+              }
+              
+              options.push(optionText);
+              
+              if (optionItem.querySelector('input[type="radio"]').checked) {
+                correctAnswer = optionText;
+              }
+            }
+            
+            if (!correctAnswer) {
+              alert("Please select a correct answer for each question");
+              return;
+            }
+            
+            questions.push({
+              id: `Q${questions.length + 1}`,
+              text: questionText,
+              answer: correctAnswer,
+              options: options
+            });
+          } else {
+            const answerInput = questionItem.querySelector('.answer-input');
+            const answer = answerInput ? answerInput.value.trim() : "";
+            
+            if (!answer) {
+              alert("Please enter a correct answer for all questions");
+              return;
+            }
+            
+            questions.push({
+              id: `Q${questions.length + 1}`,
+              text: questionText,
+              answer: answer
+            });
+          }
+        }
+        
+        // Generate a unique ID for the new quiz
+        const quizId = `custom-${Date.now()}`;
+        
+        const newQuiz = {
+          id: quizId,
+          title: title,
+          topic: topic,
+          type: type,
+          questions: questions
+        };
+        
+        quizzes.unshift(newQuiz);
+        
+        // Track created quizzes by user
+        if (!userCreatedQuizzes.has(currentUserId)) {
+          userCreatedQuizzes.set(currentUserId, new Set());
+        }
+        userCreatedQuizzes.get(currentUserId).add(quizId);
+        
+        // Return to quiz selection and show the new quiz
+        quizCreatorSection.style.display = "none";
+        quizSection.style.display = "block";
+        filterQuizzes("created");
+      }
+
+      function cancelQuiz() {
+        quizCreatorSection.style.display = "none";
+        quizSection.style.display = "block";
+      }
+
+    </script>
+</body>
+</html>
